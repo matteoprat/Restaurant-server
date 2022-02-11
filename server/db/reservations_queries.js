@@ -9,7 +9,8 @@ module.exports = {
             const response = await pool.query("SELECT reservation.id, to_char(reservation.booking_date,'YYYY-MM-DD') AS booking_date, reservation.booking_table, reservation.booking_time, reservation.booked_seats, customer.name, customer.email FROM reservation INNER JOIN customer ON (reservation.customer_id = customer.id) WHERE reservation.booking_date >= $1 AND reservation.booking_date <= $2 ORDER BY reservation.booking_date, reservation.booking_time, reservation.booking_table", [startDate, endDate]);
             return {message: "Success", data: response.rows};
         } catch (err) {
-            console.error(err.message);            
+            console.error(err.message);
+            return {message: ["An error occurred while trying to retrieve reservations from database"]}            
         }
     },
     handlePost: async(reservationData) => {
@@ -20,11 +21,19 @@ module.exports = {
             if (!userData.rows[0]) {
                 return {message: ["Error: the user you try to reserve the table for does not exists"]};
             } else {
-                const writeData = await pool.query("INSERT INTO reservation (booking_date, booking_table, booking_time, booked_seats, customer_id) VALUES ($1, $2, $3, $4, $5) RETURNING *", [reservationData.date, reservationData.table, reservationData.time, reservationData.nseats, reservationData.customer]);
-                return {message: "Success", data: writeData.rows[0]};
+                // check if there is a reservation for the same day at the same time at the same hour
+                const alreadyReserved = await pool.query("SELEFT id FROM reservation WHERE booking_date = $1 AND booking_table = $2 AND booking_time = $3", [reservationData.date, reservationData.table, reservationData.time]);
+                if (alreadyReserved.rows[0]) {
+                    return { message: ["Error: a reservation for the same time/day/table already exists"]};
+                } else {
+                    // here I can insert data inside the database
+                    const writeData = await pool.query("INSERT INTO reservation (booking_date, booking_table, booking_time, booked_seats, customer_id) VALUES ($1, $2, $3, $4, $5) RETURNING *", [reservationData.date, reservationData.table, reservationData.time, reservationData.nseats, reservationData.customer]);
+                    return {message: "Success", data: writeData.rows[0]};
+                }
             }
         } catch (err) {
-            console.error(err.message);          
+            console.error(err.message); 
+            return {message: ["An error occurred while trying to record data"]};         
         }
     },
     handlePut: async(id, data) => {
@@ -45,6 +54,7 @@ module.exports = {
             }
         } catch (err) {
             console.error(err.message);
+            return {message: ["An error occured while trying to update the reservation"]};
         }
     },
     handleDelete: async(id) => {
@@ -60,6 +70,7 @@ module.exports = {
             }    
         } catch (err) {
             console.error(err.message);
+            return {message: ["An error occurred while trying to delete the reservation"]}
         }
     }
 };
