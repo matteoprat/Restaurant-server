@@ -5,13 +5,16 @@ const customers = require('../db/customers_queries');
 const checkInput = require("../libs/controller");
 
 module.exports = function (app) {
+    // CUSTOMER RELATED 
+
     app.route('/api/customer')
     .get(async (req, res) => {
         try {
             const message = await customers.handleGet();
-            res.send({result: message});
+            res.status(200).send({result: message});
         } catch (err) {
             console.error(err.message);
+            res.status(500).send({result: {message: ['An error occurred']}});
         }
     })
     .post(async (req, res) => {
@@ -25,6 +28,7 @@ module.exports = function (app) {
             res.send(result);
         } catch (err) {
             console.error(err.message);
+            res.status(500).send({result: {message: ['An error occurred']}});
         }
     })
     
@@ -40,6 +44,7 @@ module.exports = function (app) {
             res.send(result);
         } catch (err) {
             console.error(err.message);
+            res.status(500).send({result: {message: ['An error occurred']}});
         }
         
     })
@@ -54,10 +59,11 @@ module.exports = function (app) {
             res.send(result);
         } catch (err) {
             console.error(err.message);
+            res.status(500).send({result: {message: ['An error occurred']}});
         }
         
     });
-
+    // RESERVATIONS RELATED
     app.route('/api/reservations')
     .get(async (req, res) => {
         try {
@@ -70,6 +76,7 @@ module.exports = function (app) {
             res.send(result);
         } catch (err) {
             console.error(err.message);
+            res.status(500).send({result: {message: ['An error occurred']}});
         }
     })
     .post(async (req, res) => {
@@ -85,6 +92,7 @@ module.exports = function (app) {
             res.send(result);
         } catch (err) {
             console.error(err.message);
+            res.status(500).send({result: {message: ['An error occurred']}});
         }
     })
 
@@ -103,6 +111,7 @@ module.exports = function (app) {
             res.send(result);
         } catch (err) {
             console.error(err.message);
+            res.status(500).send({result: {message: ['An error occurred']}});
         }
     })
     .delete(async (req, res) => {
@@ -114,6 +123,7 @@ module.exports = function (app) {
             res.send(result);
         } catch (err) {
             console.error(err.message);
+            res.status(500).send({result: {message: ['An error occurred']}});
         }
     });
 }
