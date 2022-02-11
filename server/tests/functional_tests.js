@@ -25,7 +25,7 @@ suite('Functionl Tests', async () => {
         .post('/api/customer/')
         .send({name: "John Titar", email: "emailfromfuture@damain.ed"})
         .end(function(err, res){
-          assert.equal(res.status, 200);
+          assert.equal(res.status, 201);
           assert.equal(res.body.message, "Success", "no problem reported");
           assert.isObject(res.body.data, "Data should be returned inside an object");
           assert.equal(res.body.data.name, "John Titar", "The name should be inserted correctly");
@@ -63,7 +63,7 @@ suite('Functionl Tests', async () => {
       .post('/api/customer/')
       .send({name: "John Titar", email: "emailfromfuturedamain.ed"})
       .end(function(err, res){
-        assert.equal(res.status, 200);
+        assert.equal(res.status, 400);
         assert.equal(res.body.message[0], "Error: invalid E-MAIL ADDRESS format", "email format error should be reported");
       });
     });
@@ -73,7 +73,7 @@ suite('Functionl Tests', async () => {
       .post('/api/customer/')
       .send({name: "John Titar"})
       .end(function(err, res){
-        assert.equal(res.status, 200);
+        assert.equal(res.status, 400);
         assert.equal(res.body.message[0], "Error: missing required field E-MAIL ADDRESS", "missing email error should be reported");
       });
     });
@@ -83,7 +83,7 @@ suite('Functionl Tests', async () => {
       .post('/api/customer/')
       .send({name: "John Titar", email: ""})
       .end(function(err, res){
-        assert.equal(res.status, 200);
+        assert.equal(res.status, 400);
         assert.equal(res.body.message[0], "Error: missing required field E-MAIL ADDRESS", "missing email error should be reported");
       });
     });
@@ -93,7 +93,7 @@ suite('Functionl Tests', async () => {
       .post('/api/customer/')
       .send({email: "johntitor@future.com"})
       .end(function(err, res){
-        assert.equal(res.status, 200);
+        assert.equal(res.status, 400);
         assert.equal(res.body.message[0], "Error: missing required field NAME", "missing name error should be reported");
       });
     });
@@ -103,7 +103,7 @@ suite('Functionl Tests', async () => {
       .post('/api/customer/')
       .send({name: "", email: "johntitor@future.com"})
       .end(function(err, res){
-        assert.equal(res.status, 200);
+        assert.equal(res.status, 400);
         assert.equal(res.body.message[0], "Error: missing required field NAME", "missing name error should be reported");
       });
     });
@@ -113,7 +113,7 @@ suite('Functionl Tests', async () => {
         .put('/api/customer/string')
         .send({name: "John TitOr"})
         .end(function(err, res){
-          assert.equal(res.status, 200);
+          assert.equal(res.status, 400);
           assert.equal(res.body.message[0], "Error: ID should be a number", "invalid ID type should be reported");
         });
     }); 
@@ -123,7 +123,7 @@ suite('Functionl Tests', async () => {
         .put('/api/customer/8')
         .send({})
         .end(function(err, res){
-          assert.equal(res.status, 200);
+          assert.equal(res.status, 400);
           assert.equal(res.body.message[0], "Error: missing required field NAME", "missing name error should be reported");
         });
     }); 
@@ -133,7 +133,7 @@ suite('Functionl Tests', async () => {
         .put('/api/customer/8')
         .send({name: ""})
         .end(function(err, res){
-          assert.equal(res.status, 200);
+          assert.equal(res.status, 400);
           assert.equal(res.body.message[0], "Error: missing required field NAME", "missing name error should be reported");
         });
     }); 
@@ -142,7 +142,7 @@ suite('Functionl Tests', async () => {
       chai.request(server)
         .delete('/api/customer/string')
         .end(function(err, res){
-          assert.equal(res.status, 200);
+          assert.equal(res.status, 400);
           assert.equal(res.body.message[0], "Error: ID should be a number", "wrong ID type should be reported");
         });
     }); 
@@ -153,7 +153,7 @@ suite('Functionl Tests', async () => {
         .post('/api/customer/')
         .send({name: "Pippo", email: "123456789@567.ed"})
         .end(async function(err, res){
-          assert.equal(res.status, 200);
+          assert.equal(res.status, 400);
           assert.equal(res.body.message[0], "Error: a user with the same email is already in the database", "duplicate email address should be reported");
           await dbTests.deleteCustomer(id);
         });
@@ -163,7 +163,7 @@ suite('Functionl Tests', async () => {
       chai.request(server)
         .delete('/api/customer/10045878')
         .end(function(err, res){
-          assert.equal(res.status, 200);
+          assert.equal(res.status, 400);
           assert.equal(res.body.message[0], "Error: this user is not in our database", "wrong ID type should be reported");
         });
     }); 
@@ -173,12 +173,11 @@ suite('Functionl Tests', async () => {
         .put('/api/customer/10045878')
         .send({name: "Stallman"})
         .end(function(err, res){
-          assert.equal(res.status, 200);
+          assert.equal(res.status, 400);
           assert.equal(res.body.message[0], "Error: this user is not in our database", "wrong ID type should be reported");
         });
     }); 
 
     // PART III: TESTING CORRECT DATA PASSED TO RESERVATION
-
     
 });
