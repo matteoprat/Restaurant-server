@@ -22,7 +22,7 @@ module.exports = {
                 return {message: ["Error: the user you try to reserve the table for does not exists"]};
             } else {
                 // check if there is a reservation for the same day at the same time at the same hour
-                const alreadyReserved = await pool.query("SELEFT id FROM reservation WHERE booking_date = $1 AND booking_table = $2 AND booking_time = $3", [reservationData.date, reservationData.table, reservationData.time]);
+                const alreadyReserved = await pool.query("SELECT id FROM reservation WHERE booking_date = $1 AND booking_table = $2 AND booking_time = $3", [reservationData.date, reservationData.table, reservationData.time]);
                 if (alreadyReserved.rows[0]) {
                     return { message: ["Error: a reservation for the same time/day/table already exists"]};
                 } else {
